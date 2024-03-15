@@ -7,11 +7,22 @@
 
     <div class="my-4">
         <ClientOnly>
-            <UButton @click="{; stateReset(); isOpen = true}">
-                <UIcon name="i-material-symbols:add" dynamic></UIcon>
-                tambahkan peralatan
-            </UButton>
+            <div class="flex gap-x-4">
+                <UButton @click="{; stateReset(); isOpen = true}">
+                    <UIcon name="i-material-symbols:add" dynamic></UIcon>
+                    tambahkan peralatan
+                </UButton>
+                <UButton color="gray" class="cursor-default">
+                    Total: {{total}}
+                </UButton>
+            </div>
             <UTable :rows="rows" :columns="columns" :loading="pending">
+                <template #jumlah-data="{ row }">
+                    {{ formatNumber(row.jumlah) }}
+                </template>
+                <template #harga-data="{ row }">
+                    {{ formatNumber(row.harga) }}
+                </template>
                 <template #actions-data="{ row }">
                     <UDropdown :items="items(row)">
                         <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
@@ -149,7 +160,7 @@ const schema = z.object({
 })
 
 type Schema = z.output<typeof schema>
-
+const total = ref(0)
 const state = reactive({
     no: '',
     id: '',
@@ -222,6 +233,15 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 const { data: rows, pending, refresh } = await useLazyFetch(() =>
     `/api/peralatan`
 )
+
+watch(rows, (e)=>{
+    let d =0
+    e?.forEach(j=>{
+        d += j.jumlah
+    })
+    // @ts-ignore
+    total.value = formatNumber(d)
+})
 const isOpen = ref(false)
 
 

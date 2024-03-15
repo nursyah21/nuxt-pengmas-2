@@ -8,7 +8,7 @@
             <!-- <UInput icon="i-heroicons-magnifying-glass-20-solid" variant="outline" placeholder="Search..." /> -->
         </div>
 
-        <div class="flex items-center gap-x-4">
+        <div class="sm:hidden flex items-center gap-x-4">
             <!-- <ULink to="/dashboard/settings">
                 <div class="flex items-center gap-x-1 hover:opacity-80 transition-opacity duration-600">
                     <div class="flex flex-col">
@@ -21,17 +21,41 @@
 
             <!-- <UChip :show="notification.show" :text="notification.count" size="2xl" :color="colorPrimary">
                 <UButton icon="i-heroicons-bell" color="gray" />
-            </UChip>
+            </UChip> -->
 
-            <UButton color="gray" to="/logout">
-                <UIcon name="i-material-symbols:logout" dynamic /> Logout
-            </UButton> -->
+            <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
+                <UButton color="gray" icon="i-material-symbols:menu">
+                </UButton>
+            </UDropdown>
         </div>
 
     </header>
 </template>
 
 <script setup>
+const items = [
+    [{
+        label: 'Dashboard',
+        icon: 'i-material-symbols:dashboard',
+        click: () => {
+            navigateTo('/dashboard')
+        }
+    },
+    {
+        label: 'Peralatan',
+        click: () => {
+            navigateTo('/dashboard/peralatan')
+        }
+    },
+    {
+        label: 'Habis Pakai',
+        click: () => {
+            navigateTo('/dashboard/habis-pakai')
+        }
+    }
+    ],
+]
+
 // const colorPrimary = ref(useColorPrimary())
 // // console.log(colorPrimary)
 // const notification = {

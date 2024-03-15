@@ -7,15 +7,14 @@
         <div class="my-4">
             
             <ClientOnly>
-                <div class="flex gap-x-5 w-full">
+                <div class="sm:flex gap-x-5 gap-y-4 grid">
                     <UCard>
-                        <h1></h1>
-                        <apexchart width="500" height="300" type="bar" :options="options" :series="series"
-                            class="bg-transparent max-w-[48em]"></apexchart>
+                        <apexchart  height="300" type="bar" :options="options" :series="series"
+                            class="bg-transparent max-w-[48em] sm:w-[450px] w-[300px]"></apexchart>
                     </UCard>
                     <UCard>
-                        <apexchart width="500" height="300" type="bar" :options="options" :series="series"
-                            class="bg-transparent max-w-[48em]"></apexchart>
+                        <apexchart height="300" type="bar" :options="options" :series="series"
+                            class="bg-transparent max-w-[48em] sm:w-[450px] w-[300px]"></apexchart>
                     </UCard>
                 </div>
                 <template #fallback>

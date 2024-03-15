@@ -1,5 +1,5 @@
 <template>
-    <aside class="flex flex-col w-[12em] h-screen px-5 py-8 overflow-y-auto  border-r  dark:border-gray-700">
+    <aside class="sm:flex flex-col w-[12em] h-screen px-5 py-8 overflow-y-auto  border-r  dark:border-gray-700 hidden">
         <!-- <a href="#">
             <img class="w-auto h-7" src="https://merakiui.com/images/logo.svg" alt="">
         </a> -->
