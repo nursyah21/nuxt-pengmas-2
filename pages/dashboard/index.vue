@@ -5,10 +5,8 @@
     <UBreadcrumb divider="/" :links="[{ label: 'Home', to: '/dashboard' }]" />
     <div>
         <div class="my-4">
-            <div class="flex items-center justify-center" v-if="isLoading">
-                <UProgress animation="carousel" class="max-w-64" />
-            </div>
-            <ClientOnly v-else>
+            
+            <ClientOnly>
                 <div class="flex gap-x-5 w-full">
                     <UCard>
                         <h1></h1>
@@ -20,11 +18,14 @@
                             class="bg-transparent max-w-[48em]"></apexchart>
                     </UCard>
                 </div>
+                <template #fallback>
+                    <USkeleton class="w-full h-64" />
+                </template>
             </ClientOnly>
         </div>
     </div>
 </template>
-  
+
 <script setup>
 
 definePageMeta({
@@ -34,7 +35,7 @@ useHead({
     title: 'dashboard'
 })
 
-const colorMode = useColorMode()
+
 const isLoading = ref(true)
 const options = ref({
     chart: {
@@ -43,7 +44,7 @@ const options = ref({
             mode: 'light'
         },
     },
-    title:{
+    title: {
         text: 'asdsad'
     },
     xaxis: {
@@ -59,9 +60,6 @@ const updateChartMode = () => {
     options.value = {
         ...options.value,
         // @ts-ignore
-        theme: {
-            mode: colorMode.value
-        }
     }
     options.value = {
         ...options.value,
@@ -73,11 +71,6 @@ const updateChartMode = () => {
     isLoading.value = false
 }
 
-
-watch(colorMode, () => {
-    updateChartMode()
-    isLoading.value = false
-})
 
 onMounted(() => {
     updateChartMode()

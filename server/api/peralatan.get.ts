@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
   data.forEach((e, idx) => {
     newData.push({
       no: idx + 1,
+      id: e.id,
       nama: e.nama,
       keterangan: e.keterangan,
       kuantitas: e.kuantitas,

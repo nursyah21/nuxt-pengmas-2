@@ -11,41 +11,25 @@
 
                     <ULink
                         class="flex items-center px-3 py-2 text-gray-600 transition-colors duration-[.3s] transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
-                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700" to="/dashboard">
+                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700" to="/dashboard" replace>
                         <UIcon name="i-material-symbols:dashboard" dynamic />
                         <span class="mx-2 text-sm font-medium">Dashboard</span>
                     </ULink>
                     <ULink
                         class="flex items-center px-3 py-2 text-gray-600 transition-colors duration-[.3s] transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
-                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700" to="/dashboard/peralatan">
+                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700" to="/dashboard/peralatan" replace>
                         <!-- <UIcon name="i-material-symbols:dashboard" dynamic /> -->
                         <span class="mx-2 text-sm font-medium">Peralatan</span>
                     </ULink>
 
                     <ULink
                         class="flex items-center px-3 py-2 text-gray-600 transition-colors duration-[.3s] transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
-                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700" to="/dashboard/habis-pakai">
+                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700" to="/dashboard/habis-pakai" replace as="button">
                         <!-- <UIcon name="i-material-symbols:dashboard" dynamic /> -->
                         <span class="mx-2 text-sm font-medium">Habis Pakai</span>
                     </ULink>
 
-                    <!-- <ULink
-                    
-                        class="flex items-center px-3 py-2 text-gray-600 transition-colors duration-[.3s] transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
-                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700" 
-                        to="/dashboard/users">
-                        <UIcon name="i-material-symbols:supervisor-account" dynamic />
-                        <span class="mx-2 text-sm font-medium">Users</span>
-                    </ULink>
-
-                    <ULink
-                    
-                        class="flex items-center px-3 py-2 text-gray-600 transition-colors duration-[.3s] transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
-                        activeClass="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-700"
-                        to="/dashboard/settings">
-                        <UIcon name="i-material-symbols:settings" dynamic />
-                        <span class="mx-2 text-sm font-medium">Settings</span>
-                    </ULink> -->
+                
                 </div>
 
 

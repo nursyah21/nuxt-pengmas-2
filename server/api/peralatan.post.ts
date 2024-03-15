@@ -16,5 +16,5 @@ export default defineEventHandler(async (event) => {
 
  await schemaPeralatan.create({ nama, keterangan, kuantitas, satuan, harga })
  
- return {message: 'success'}
+ return {message: "success menambahkan peralatan"}
 });

@@ -1,13 +1,13 @@
 <template>
     <h1 class="text-2xl font-bold">
-        Peralatan
+        Habis Pakai
     </h1>
     <UBreadcrumb divider="/"
-        :links="[{ label: 'Home', to: '/dashboard' }, { label: 'Peralatan', to: '/dashboard/peralatan' }]" />
+        :links="[{ label: 'Home', to: '/dashboard' }, { label: 'habis pakai', to: '/dashboard/habis-pakai' }]" />
 
     <div class="my-4">
         <ClientOnly>
-            <UButton @click="{; stateReset(); isOpen = true}">
+            <UButton @click="isOpen = true">
                 <UIcon name="i-material-symbols:add" dynamic></UIcon>
                 tambahkan peralatan
             </UButton>
@@ -21,51 +21,12 @@
             <template #fallback>
                 <USkeleton class="w-full h-64" />
             </template>
-
+            
         </ClientOnly>
     </div>
 
-    <!-- delete -->
-    <UModal v-model="isDelete" :prevent-close="isSubmit">
-        <ClientOnly>
-            <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onDelete">
-                <UFormGroup label="Nama Peralatan" name="nama">
-                    <UInput v-model="state.nama" disabled />
-                </UFormGroup>
 
-                <UFormGroup label="Keterangan" name="keterangan">
-                    <UInput v-model="state.keterangan" disabled />
-                </UFormGroup>
-
-                <UFormGroup label="Kuantitas" name="kuantitas">
-                    <UInput v-model="state.kuantitas" type="number" disabled />
-                </UFormGroup>
-
-                <UFormGroup label="Satuan" name="satuan">
-                    <UInputMenu v-model="state.satuan" :options="['unit']" disabled />
-                </UFormGroup>
-
-                <UFormGroup label="harga" name="harga">
-                    <UInput v-model="state.harga" type="number" disabled />
-                </UFormGroup>
-
-                <UButton :disabled="isSubmit" type="submit" class="w-full justify-center" color="red">
-                    <template v-if="isSubmit">
-                        <UIcon name="i-eos-icons-loading" /> Please wait...
-                    </template>
-                    <template v-else>
-                        Delete
-                    </template>
-                </UButton>
-            </UForm>
-            <template #fallback>
-                <USkeleton />
-            </template>
-        </ClientOnly>
-    </UModal>
-
-    <!-- edit/add -->
-    <UModal v-model="isOpen" :prevent-close="isSubmit">
+    <UModal v-model="isOpen">
         <ClientOnly>
             <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onSubmit">
                 <UFormGroup label="Nama Peralatan" name="nama">
@@ -96,6 +57,7 @@
                         Submit
                     </template>
                 </UButton>
+
             </UForm>
             <template #fallback>
                 <USkeleton />
@@ -107,38 +69,19 @@
 <script setup lang="ts">
 import z from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
+import axios from 'axios'
 
 // @ts-ignore
 const items = (row) => [
     [{
         label: 'Edit',
         icon: 'i-heroicons-pencil-square-20-solid',
-        click: () => {
-            state.nama = row.nama
-            state.id = row.id
-            state.keterangan = row.keterangan
-            state.satuan = row.satuan
-            state.harga = Number(row.harga)
-            state.kuantitas = Number(row.kuantitas)
-            isOpen.value = true
-        }
+        click: () => console.log('Edit', row)
     }], [{
         label: 'Delete',
-        icon: 'i-heroicons-trash-20-solid',
-        click: () => {
-            state.id = row.id
-            state.no = row.no
-            state.nama = row.nama
-            state.keterangan = row.keterangan
-            state.satuan = row.satuan
-            state.harga = Number(row.harga)
-            state.kuantitas = Number(row.kuantitas)
-            isDelete.value = true
-        }
+        icon: 'i-heroicons-trash-20-solid'
     }]
 ]
-
-const isDelete = ref(false)
 
 const schema = z.object({
     nama: z.string(),
@@ -151,61 +94,22 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const state = reactive({
-    no: '',
-    id: '',
-    nama: '',
-    keterangan: '',
-    kuantitas: 0,
+    nama: undefined,
+    keterangan: undefined,
+    kuantitas: undefined,
     satuan: 'unit',
-    harga: 0,
+    harga: undefined,
 })
-const stateReset = () => {
-    state.nama = ''
-    state.id = ''
-    state.no = ''
-    state.keterangan = ''
-    state.satuan = ''
-    state.harga = 0
-    state.kuantitas = 0
-}
 
 const isSubmit = ref(false)
-async function onDelete(event: FormSubmitEvent<any>) {
-    isSubmit.value = true
-    const submitData = event.data
-
-    $fetch('/api/peralatan', {
-        method: 'delete',
-        body: submitData
-    })
-        .then(async e => {
-            console.log(e)
-            toastSuccess('success menghapus data')
-            refresh()
-            isDelete.value = false
-        })
-        .catch(e => {
-            console.log(e)
-            const error = e?.response?.data?.message ?? 'An unknown error occurred.'
-            toastError(error)
-        }).finally(() => {
-            isSubmit.value = false
-            stateReset()
-        })
-}
-
 async function onSubmit(event: FormSubmitEvent<any>) {
     isSubmit.value = true
     const submitData = event.data
-    const method = submitData.id ? 'put' : 'post'
-    console.log(method)
 
-    $fetch('/api/peralatan', {
-        method: method,
-        body: submitData
-    })
+    axios.post('/api/peralatan', submitData).then(e => e.data)
         .then(async e => {
-            toastSuccess(e.message)
+            toastSuccess('success menambambahkan data')
+            await new Promise(r => setTimeout(r, 1500))
             refresh()
             isOpen.value = false
         })
@@ -213,10 +117,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             console.log(e)
             const error = e?.response?.data?.message ?? 'An unknown error occurred.'
             toastError(error)
-        }).finally(() => {
-            isSubmit.value = false
-            stateReset()
-        })
+        }).finally(() => { isSubmit.value = false })
+
 }
 
 const { data: rows, pending, refresh } = await useLazyFetch(() =>
@@ -229,7 +131,7 @@ definePageMeta({
     layout: 'dashboard'
 })
 useHead({
-    title: 'peralatan'
+    title: 'habis pakai'
 })
 
 const columns = [
@@ -268,5 +170,6 @@ const columns = [
         key: 'actions'
     }
 ]
+
 
 </script>

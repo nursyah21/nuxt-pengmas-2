@@ -7,5 +7,9 @@ export default defineNuxtConfig({
   },
   colorMode: {
     preference: 'light'
-  }
+  },
+  // router: {
+  //   // @ts-ignore
+  //   prefetchLinks: true
+  // }
 })
