@@ -1,27 +1,24 @@
 <template>
     <h1 class="text-2xl font-bold">
-        Peralatan
+        Penyusutan
     </h1>
     <UBreadcrumb divider="/"
-        :links="[{ label: 'Home', to: '/dashboard' }, { label: 'Peralatan', to: '/dashboard/peralatan' }]" />
+        :links="[{ label: 'Home', to: '/dashboard' }, { label: 'Penyusutan', to: '/dashboard/penyusutan' }]" />
 
     <div class="my-4">
         <ClientOnly>
-            <div class="flex gap-x-4">
-                <UButton @click="{; stateReset(); isOpen = true}">
-                    <UIcon name="i-material-symbols:add" dynamic></UIcon>
-                    tambahkan peralatan
-                </UButton>
-                <UButton color="gray" class="cursor-default">
-                    Total: {{rows?.total}}
-                </UButton>
-            </div>
             <UTable :rows="rows?.data" :columns="columns" :loading="pending">
-                <template #jumlah-data="{ row }">
-                    {{ formatNumber(row.jumlah) }}
+                <template #penyusutan_tahun-data="{ row }">
+                    {{ formatNumber(row.penyusutan_tahun) }}
                 </template>
-                <template #harga-data="{ row }">
-                    {{ formatNumber(row.harga) }}
+                <template #penyusutan_bulan-data="{ row }">
+                    {{ formatNumber(row.penyusutan_bulan) }}
+                </template>
+                <template #penyusutan_hari-data="{ row }">
+                    {{ formatNumber(row.penyusutan_hari) }}
+                </template>
+                <template #penyusutan_hari_unit-data="{ row }">
+                    {{ formatNumber(row.penyusutan_hari_unit) }}
                 </template>
                 <template #actions-data="{ row }">
                     <UDropdown :items="items(row)">
@@ -36,11 +33,13 @@
         </ClientOnly>
     </div>
 
+    
+
     <!-- delete -->
     <UModal v-model="isDelete" :prevent-close="isSubmit">
         <ClientOnly>
             <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onDelete">
-                <UFormGroup label="Nama Peralatan" name="nama">
+                <UFormGroup label="Nama Bahan Habis Pakai" name="nama">
                     <UInput v-model="state.nama" disabled />
                 </UFormGroup>
 
@@ -53,7 +52,7 @@
                 </UFormGroup>
 
                 <UFormGroup label="Satuan" name="satuan">
-                    <USelectMenu v-model="state.satuan" :options="['unit']" disabled />
+                    <USelectMenu v-model="state.satuan" :options="satuanOptions" disabled />
                 </UFormGroup>
 
                 <UFormGroup label="harga" name="harga">
@@ -79,7 +78,7 @@
     <UModal v-model="isOpen" :prevent-close="isSubmit">
         <ClientOnly>
             <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onSubmit">
-                <UFormGroup label="Nama Peralatan" name="nama">
+                <UFormGroup label="Nama Bahan Habis Pakai" name="nama">
                     <UInput v-model="state.nama" />
                 </UFormGroup>
 
@@ -118,6 +117,10 @@
 <script setup lang="ts">
 import z from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
+
+const { data: rows, pending, refresh } = await useLazyFetch(() =>
+    `/api/penyusutan`
+)
 
 // @ts-ignore
 const items = (row) => [
@@ -160,8 +163,16 @@ const schema = z.object({
 })
 
 type Schema = z.output<typeof schema>
-const total = ref('0')
-const satuanOptions = ['unit']
+
+// @ts-ignore
+const isOpenKapasitas = ref(false)
+
+const satuanOptions = ['unit', 'liter']
+
+const stateKapasitas = reactive({
+    id: '',
+    kapasitas_produksi: 0
+})
 const state = reactive({
     no: '',
     id: '',
@@ -181,12 +192,13 @@ const stateReset = () => {
     state.kuantitas = 0
 }
 
+
 const isSubmit = ref(false)
 async function onDelete(event: FormSubmitEvent<any>) {
     isSubmit.value = true
     const submitData = event.data
 
-    $fetch('/api/peralatan', {
+    $fetch('/api/habis-pakai', {
         method: 'delete',
         body: submitData
     })
@@ -206,13 +218,13 @@ async function onDelete(event: FormSubmitEvent<any>) {
         })
 }
 
+
 async function onSubmit(event: FormSubmitEvent<any>) {
     isSubmit.value = true
     const submitData = event.data
     const method = submitData.id ? 'put' : 'post'
-    console.log(method)
 
-    $fetch('/api/peralatan', {
+    $fetch('/api/habis-pakai', {
         method: method,
         body: submitData
     })
@@ -221,6 +233,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             refresh()
             isOpen.value = false
         })
+        // @ts-ignore
         .catch(e => {
             console.log(e)
             const error = e?.response?.data?.message ?? 'An unknown error occurred.'
@@ -231,11 +244,6 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         })
 }
 
-const { data: rows, pending, refresh } = await useLazyFetch(() =>
-    `/api/peralatan`
-)
-
-
 const isOpen = ref(false)
 
 
@@ -243,7 +251,7 @@ definePageMeta({
     layout: 'dashboard'
 })
 useHead({
-    title: 'peralatan'
+    title: 'penyusutan'
 })
 
 const columns = [
@@ -253,30 +261,39 @@ const columns = [
         sortable: true
     }, {
         key: 'nama',
-        label: 'Pembelian Peralatan',
+        label: 'Nama Peralatan',
         sortable: true
     },
     {
-        key: 'keterangan',
-        label: 'Keterangan',
+        key: 'nilai',
+        label: 'Nilai',
     },
     {
-        key: 'kuantitas',
-        label: 'Kuantitas',
+        key: 'residu',
+        label: 'NIlai Residu',
+    },
+    {
+        key: 'umur',
+        label: 'Umur ekonomis',
+    },
+    {
+        key: 'penyusutan_tahun',
+        label: 'Penyusutan Pertahun',
         sortable: true
     },
     {
-        key: 'satuan',
-        label: 'Satuan',
-    },
-    {
-        key: 'harga',
-        label: 'Harga',
+        key: 'penyusutan_bulan',
+        label: 'Penyusutan Perbulan',
         sortable: true
     },
     {
-        key: 'jumlah',
-        label: 'Jumlah',
+        key: 'penyusutan_hari',
+        label: 'Penyusutan Perhari',
+        sortable: true
+    },
+    {
+        key: 'penyusutan_hari_unit',
+        label: 'Penyusutan Perhari Perunit',
         sortable: true
     },
     {

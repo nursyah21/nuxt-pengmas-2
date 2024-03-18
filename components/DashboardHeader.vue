@@ -52,6 +52,12 @@ const items = [
         click: () => {
             navigateTo('/dashboard/habis-pakai')
         }
+    },
+    {
+        label: 'Penyusutan',
+        click: () => {
+            navigateTo('/dashboard/penyusutan')
+        }
     }
     ],
 ]

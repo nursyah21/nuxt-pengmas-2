@@ -4,17 +4,9 @@ import { schemaPeralatan } from "~/schema/schemaPeralatan";
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
-  const { nama, keterangan, kuantitas, satuan, harga } = await useValidatedBody(event, {
-    nama: z.string(),
-    keterangan: z.string(),
-    kuantitas: z.number(),
-    satuan: z.string(),
-    harga: z.number(),
-  });
+  const { nama, keterangan, kuantitas, satuan, harga } = await readBody(event)
 
- console.log({ nama, keterangan, kuantitas, satuan, harga })
-
- await schemaPeralatan.create({ nama, keterangan, kuantitas, satuan, harga })
+ await schemaPeralatan.create({ nama, keterangan, kuantitas, satuan, harga, penyusutan: 3, residu: 5000 })
  
  return {message: "success menambahkan peralatan"}
 });

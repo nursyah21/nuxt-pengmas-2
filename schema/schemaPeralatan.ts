@@ -26,6 +26,14 @@ export const schemaPeralatan = model(
       type: Number,
       required: true,
     },
+    penyusutan: {
+      type: Number,
+      required: true
+    },
+    residu: {
+      type: Number,
+      required: true
+    },
   }, { timestamps: true }),
 );
 
