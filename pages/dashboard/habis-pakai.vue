@@ -17,12 +17,11 @@
                     </UButton>
                 </div>
                 <div class="flex gap-x-4">
-                    <UButton icon="i-heroicons-pencil-square-20-solid">
-                        <!-- <UIcon name="i-heroicons-pencil-square-20-solid" /> -->
+                    <UButton icon="i-heroicons-pencil-square-20-solid"  @click="isOpenKapasitas = true" :disabled="pending_kapasitas">
                         Edit Kapasitas Perbulan
                     </UButton>
                     <UButton color="gray" class="cursor-default">
-                        Kapasitas Produksi Perbulan: 0
+                        Kapasitas Produksi Perbulan: {{ kapasitas_produksi?.kapasitas }}
                     </UButton>
                 </div>
             </div>
@@ -45,6 +44,29 @@
 
         </ClientOnly>
     </div>
+
+    <!-- kapasitas produksi -->
+    <UModal v-model="isOpenKapasitas" :prevent-close="isSubmit">
+        <ClientOnly>
+            <UForm  :state="stateKapasitas" class="space-y-4 m-4" @submit="onSubmitKapasitas">
+                <UFormGroup label="Kuantitas" name="kuantitas">
+                    <UInput v-model="stateKapasitas.kapasitas_produksi" type="number"/>
+                </UFormGroup>
+
+                <UButton :disabled="isSubmit" type="submit" class="w-full justify-center">
+                    <template v-if="isSubmit">
+                        <UIcon name="i-eos-icons-loading" /> Please wait...
+                    </template>
+                    <template v-else>
+                        Submit
+                    </template>
+                </UButton>
+            </UForm>
+            <template #fallback>
+                <USkeleton />
+            </template>
+        </ClientOnly>
+    </UModal>
 
     <!-- delete -->
     <UModal v-model="isDelete" :prevent-close="isSubmit">
@@ -129,6 +151,13 @@
 import z from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 
+const { data: rows, pending, refresh } = await useLazyFetch(() =>
+    `/api/habis-pakai`
+)
+const { data: kapasitas_produksi, pending: pending_kapasitas, refresh: refresh_kapasitas } = await useLazyFetch(() =>
+    `/api/kapasitas-produksi`
+)
+
 // @ts-ignore
 const items = (row) => [
     [{
@@ -171,7 +200,15 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
+// @ts-ignore
+const isOpenKapasitas = ref(false)
+
 const satuanOptions = ['unit', 'liter']
+
+const stateKapasitas = reactive({
+    id: '',
+    kapasitas_produksi: 0
+})
 const state = reactive({
     no: '',
     id: '',
@@ -190,6 +227,15 @@ const stateReset = () => {
     state.harga = 0
     state.kuantitas = 0
 }
+watch(kapasitas_produksi, (e)=> {
+    if(kapasitas_produksi){
+        // @ts-ignore 
+        stateKapasitas.id = e?.id
+        // @ts-ignore 
+        stateKapasitas.kapasitas_produksi = e?.kapasitas ?? ''
+    }
+})
+
 
 const isSubmit = ref(false)
 async function onDelete(event: FormSubmitEvent<any>) {
@@ -213,6 +259,31 @@ async function onDelete(event: FormSubmitEvent<any>) {
         }).finally(() => {
             isSubmit.value = false
             stateReset()
+        })
+}
+
+async function onSubmitKapasitas(event: FormSubmitEvent<any>) {
+    isSubmit.value = true
+    const submitData = event.data
+    const method = submitData.id ? 'put' : 'post'
+    console.log(submitData)
+
+    $fetch('/api/kapasitas-produksi', {
+        method: method,
+        body: submitData
+    })
+        .then(async e => {
+            toastSuccess(e.message)
+            refresh_kapasitas()
+            isOpenKapasitas.value = false
+        })
+        // @ts-ignore
+        .catch(e => {
+            console.log(e)
+            const error = e?.response?.data?.message ?? 'An unknown error occurred.'
+            toastError(error)
+        }).finally(() => {
+            isSubmit.value = false
         })
 }
 
@@ -241,12 +312,9 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         })
 }
 
-const { data: rows, pending, refresh } = await useLazyFetch(() =>
-    `/api/habis-pakai`
-)
 const isOpen = ref(false)
 
-console.log(rows)
+
 definePageMeta({
     layout: 'dashboard'
 })
