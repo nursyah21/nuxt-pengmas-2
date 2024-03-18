@@ -55,21 +55,4 @@ const items = [
     }
     ],
 ]
-
-// const colorPrimary = ref(useColorPrimary())
-// // console.log(colorPrimary)
-// const notification = {
-//     show: true,
-//     count: 3
-// }
-
-// const isOpenExit = ref(false)
-// function logout() {
-//     // console.log('logout')
-// }
-
-// watch(useColorMode(), ()=>{
-//     colorPrimary.value = useColorPrimary()
-//     // console.log(colorPrimary)
-// })
 </script>

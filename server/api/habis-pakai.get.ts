@@ -1,10 +1,12 @@
 import formatNumber from "~/composables/formatNumber";
-import { schemaPeralatan } from "~/schema/schemaPeralatan";
+import { schemaHabisPakai } from "~/schema/schemaHabisPakai";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
-  const data = await schemaPeralatan.find({});
+  const data = await schemaHabisPakai.find({});
+
+  console.log(data)
   // @ts-ignore
   let newData = [];
   let total = 0

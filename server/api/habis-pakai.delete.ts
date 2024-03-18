@@ -1,11 +1,11 @@
 import { useValidatedBody, z } from "h3-zod";
-import { schemaPeralatan } from "~/schema/schemaPeralatan";
+import { schemaHabisPakai } from "~/schema/schemaHabisPakai";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
   const {id} = await readBody(event)
-  await schemaPeralatan.findByIdAndDelete(id)
+  await schemaHabisPakai.findByIdAndDelete(id)
 
   return { message: "success menghapus" };
 });

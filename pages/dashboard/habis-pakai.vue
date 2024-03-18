@@ -7,11 +7,32 @@
 
     <div class="my-4">
         <ClientOnly>
-            <UButton @click="{; stateReset(); isOpen = true}">
-                <UIcon name="i-material-symbols:add" dynamic></UIcon>
-                tambahkan peralatan
-            </UButton>
-            <UTable :rows="rows" :columns="columns" :loading="pending">
+            <div class="flex flex-col gap-y-4 my-2">
+                <div class="flex gap-x-4">
+                    <UButton @click="{ ; stateReset(); isOpen = true }" icon="i-material-symbols:add">
+                        tambahkan habis pakai
+                    </UButton>
+                    <UButton color="gray" class="cursor-default">
+                        Total: {{ rows?.total }}
+                    </UButton>
+                </div>
+                <div class="flex gap-x-4">
+                    <UButton icon="i-heroicons-pencil-square-20-solid">
+                        <!-- <UIcon name="i-heroicons-pencil-square-20-solid" /> -->
+                        Edit Kapasitas Perbulan
+                    </UButton>
+                    <UButton color="gray" class="cursor-default">
+                        Kapasitas Produksi Perbulan: 0
+                    </UButton>
+                </div>
+            </div>
+            <UTable :rows="rows?.data" :columns="columns" :loading="pending">
+                <template #jumlah-data="{ row }">
+                    {{ formatNumber(row.jumlah) }}
+                </template>
+                <template #harga-data="{ row }">
+                    {{ formatNumber(row.harga) }}
+                </template>
                 <template #actions-data="{ row }">
                     <UDropdown :items="items(row)">
                         <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
@@ -29,7 +50,7 @@
     <UModal v-model="isDelete" :prevent-close="isSubmit">
         <ClientOnly>
             <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onDelete">
-                <UFormGroup label="Nama Peralatan" name="nama">
+                <UFormGroup label="Nama Bahan Habis Pakai" name="nama">
                     <UInput v-model="state.nama" disabled />
                 </UFormGroup>
 
@@ -42,7 +63,7 @@
                 </UFormGroup>
 
                 <UFormGroup label="Satuan" name="satuan">
-                    <UInputMenu v-model="state.satuan" :options="['unit']" disabled />
+                    <UInputMenu v-model="state.satuan" :options="satuanOptions" disabled />
                 </UFormGroup>
 
                 <UFormGroup label="harga" name="harga">
@@ -68,7 +89,7 @@
     <UModal v-model="isOpen" :prevent-close="isSubmit">
         <ClientOnly>
             <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onSubmit">
-                <UFormGroup label="Nama Peralatan" name="nama">
+                <UFormGroup label="Nama Bahan Habis Pakai" name="nama">
                     <UInput v-model="state.nama" />
                 </UFormGroup>
 
@@ -81,7 +102,7 @@
                 </UFormGroup>
 
                 <UFormGroup label="Satuan" name="satuan">
-                    <UInputMenu v-model="state.satuan" :options="['unit']" />
+                    <USelectMenu v-model="state.satuan" :options="satuanOptions" />
                 </UFormGroup>
 
                 <UFormGroup label="harga" name="harga">
@@ -150,13 +171,14 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
+const satuanOptions = ['unit', 'liter']
 const state = reactive({
     no: '',
     id: '',
     nama: '',
     keterangan: '',
     kuantitas: 0,
-    satuan: 'unit',
+    satuan: satuanOptions[0],
     harga: 0,
 })
 const stateReset = () => {
@@ -164,7 +186,7 @@ const stateReset = () => {
     state.id = ''
     state.no = ''
     state.keterangan = ''
-    state.satuan = ''
+    state.satuan = satuanOptions[0]
     state.harga = 0
     state.kuantitas = 0
 }
@@ -174,7 +196,7 @@ async function onDelete(event: FormSubmitEvent<any>) {
     isSubmit.value = true
     const submitData = event.data
 
-    $fetch('/api/peralatan', {
+    $fetch('/api/habis-pakai', {
         method: 'delete',
         body: submitData
     })
@@ -198,9 +220,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     isSubmit.value = true
     const submitData = event.data
     const method = submitData.id ? 'put' : 'post'
-    console.log(method)
 
-    $fetch('/api/peralatan', {
+    $fetch('/api/habis-pakai', {
         method: method,
         body: submitData
     })
@@ -209,6 +230,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             refresh()
             isOpen.value = false
         })
+        // @ts-ignore
         .catch(e => {
             console.log(e)
             const error = e?.response?.data?.message ?? 'An unknown error occurred.'
@@ -220,16 +242,16 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 }
 
 const { data: rows, pending, refresh } = await useLazyFetch(() =>
-    `/api/peralatan`
+    `/api/habis-pakai`
 )
 const isOpen = ref(false)
 
-
+console.log(rows)
 definePageMeta({
     layout: 'dashboard'
 })
 useHead({
-    title: 'peralatan'
+    title: 'habis pakai'
 })
 
 const columns = [
@@ -239,7 +261,7 @@ const columns = [
         sortable: true
     }, {
         key: 'nama',
-        label: 'Pembelian Peralatan',
+        label: 'Bahan Habis Pakai',
         sortable: true
     },
     {

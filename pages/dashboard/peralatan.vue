@@ -13,10 +13,10 @@
                     tambahkan peralatan
                 </UButton>
                 <UButton color="gray" class="cursor-default">
-                    Total: {{total}}
+                    Total: {{rows?.total}}
                 </UButton>
             </div>
-            <UTable :rows="rows" :columns="columns" :loading="pending">
+            <UTable :rows="rows?.data" :columns="columns" :loading="pending">
                 <template #jumlah-data="{ row }">
                     {{ formatNumber(row.jumlah) }}
                 </template>
@@ -160,7 +160,7 @@ const schema = z.object({
 })
 
 type Schema = z.output<typeof schema>
-const total = ref(0)
+const total = ref('0')
 const state = reactive({
     no: '',
     id: '',
@@ -234,14 +234,7 @@ const { data: rows, pending, refresh } = await useLazyFetch(() =>
     `/api/peralatan`
 )
 
-watch(rows, (e)=>{
-    let d =0
-    e?.forEach(j=>{
-        d += j.jumlah
-    })
-    // @ts-ignore
-    total.value = formatNumber(d)
-})
+
 const isOpen = ref(false)
 
 
@@ -269,6 +262,7 @@ const columns = [
     {
         key: 'kuantitas',
         label: 'Kuantitas',
+        sortable: true
     },
     {
         key: 'satuan',
