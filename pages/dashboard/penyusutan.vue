@@ -6,8 +6,38 @@
         :links="[{ label: 'Home', to: '/dashboard' }, { label: 'Penyusutan', to: '/dashboard/penyusutan' }]" />
 
     <div class="my-4">
+        <div class="flex flex-col gap-y-2">
+            <template v-if="rows">
+                <div>
+                    <UButton color="gray" class="cursor-default">
+                        Total Penyusutan pertahun: {{ formatNumber(rows.penyusutan_tahun) }}
+                    </UButton>
+                </div>
+                <div>
+                    <UButton color="gray" class="cursor-default">
+                        Total Penyusutan perbulan: {{ formatNumber(rows.penyusutan_bulan) }}
+                    </UButton>
+                </div>
+                <div>
+                    <UButton color="gray" class="cursor-default">
+                        Total Penyusutan perhari: {{ formatNumber(rows.penyusutan_tahun) }}
+                    </UButton>
+                </div>
+                <div>
+                    <UButton color="gray" class="cursor-default">
+                        Total Penyusutan perhari perunit: {{ formatNumber(rows.penyusutan_unit) }}
+                    </UButton>
+                </div>
+            </template>
+        </div>
         <ClientOnly>
             <UTable :rows="rows?.data" :columns="columns" :loading="pending">
+                <template #nilai-data="{ row }">
+                    {{ formatNumber(row.nilai) }}
+                </template>
+                <template #residu-data="{ row }">
+                    {{ formatNumber(row.residu) }}
+                </template>
                 <template #penyusutan_tahun-data="{ row }">
                     {{ formatNumber(row.penyusutan_tahun) }}
                 </template>
@@ -33,69 +63,24 @@
         </ClientOnly>
     </div>
 
-    
-
-    <!-- delete -->
-    <UModal v-model="isDelete" :prevent-close="isSubmit">
-        <ClientOnly>
-            <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onDelete">
-                <UFormGroup label="Nama Bahan Habis Pakai" name="nama">
-                    <UInput v-model="state.nama" disabled />
-                </UFormGroup>
-
-                <UFormGroup label="Keterangan" name="keterangan">
-                    <UInput v-model="state.keterangan" disabled />
-                </UFormGroup>
-
-                <UFormGroup label="Kuantitas" name="kuantitas">
-                    <UInput v-model="state.kuantitas" type="number" disabled />
-                </UFormGroup>
-
-                <UFormGroup label="Satuan" name="satuan">
-                    <USelectMenu v-model="state.satuan" :options="satuanOptions" disabled />
-                </UFormGroup>
-
-                <UFormGroup label="harga" name="harga">
-                    <UInput v-model="state.harga" type="number" disabled />
-                </UFormGroup>
-
-                <UButton :disabled="isSubmit" type="submit" class="w-full justify-center" color="red">
-                    <template v-if="isSubmit">
-                        <UIcon name="i-eos-icons-loading" /> Please wait...
-                    </template>
-                    <template v-else>
-                        Delete
-                    </template>
-                </UButton>
-            </UForm>
-            <template #fallback>
-                <USkeleton />
-            </template>
-        </ClientOnly>
-    </UModal>
-
     <!-- edit/add -->
     <UModal v-model="isOpen" :prevent-close="isSubmit">
         <ClientOnly>
-            <UForm :schema="schema" :state="state" class="space-y-4 m-4" @submit="onSubmit">
-                <UFormGroup label="Nama Bahan Habis Pakai" name="nama">
-                    <UInput v-model="state.nama" />
+            <UForm  :state="state" class="space-y-4 m-4" @submit="onSubmit">
+                <UFormGroup label="Nama Peralatan" name="nama">
+                    <UInput v-model="state.nama" disabled />
                 </UFormGroup>
 
-                <UFormGroup label="Keterangan" name="keterangan">
-                    <UInput v-model="state.keterangan" />
+                <UFormGroup label="Nilai" name="keterangan">
+                    <UInput v-model="state.nilai" disabled/>
                 </UFormGroup>
 
-                <UFormGroup label="Kuantitas" name="kuantitas">
-                    <UInput v-model="state.kuantitas" type="number" />
+                <UFormGroup label="Nilai Residu" name="kuantitas">
+                    <UInput v-model="state.residu"/>
                 </UFormGroup>
 
-                <UFormGroup label="Satuan" name="satuan">
-                    <USelectMenu v-model="state.satuan" :options="satuanOptions" />
-                </UFormGroup>
-
-                <UFormGroup label="harga" name="harga">
-                    <UInput v-model="state.harga" type="number" />
+                <UFormGroup label="Umur Ekonomis" name="kuantitas">
+                    <UInput v-model="state.umur"/>
                 </UFormGroup>
 
                 <UButton :disabled="isSubmit" type="submit" class="w-full justify-center">
@@ -130,39 +115,16 @@ const items = (row) => [
         click: () => {
             state.nama = row.nama
             state.id = row.id
-            state.keterangan = row.keterangan
-            state.satuan = row.satuan
-            state.harga = Number(row.harga)
-            state.kuantitas = Number(row.kuantitas)
+            state.nilai = row.nilai
+            state.residu = row.residu
+            state.umur = row.umur
             isOpen.value = true
-        }
-    }], [{
-        label: 'Delete',
-        icon: 'i-heroicons-trash-20-solid',
-        click: () => {
-            state.id = row.id
-            state.no = row.no
-            state.nama = row.nama
-            state.keterangan = row.keterangan
-            state.satuan = row.satuan
-            state.harga = Number(row.harga)
-            state.kuantitas = Number(row.kuantitas)
-            isDelete.value = true
         }
     }]
 ]
 
 const isDelete = ref(false)
 
-const schema = z.object({
-    nama: z.string(),
-    keterangan: z.string(),
-    kuantitas: z.number(),
-    satuan: z.string(),
-    harga: z.number(),
-})
-
-type Schema = z.output<typeof schema>
 
 // @ts-ignore
 const isOpenKapasitas = ref(false)
@@ -177,46 +139,21 @@ const state = reactive({
     no: '',
     id: '',
     nama: '',
-    keterangan: '',
-    kuantitas: 0,
-    satuan: satuanOptions[0],
-    harga: 0,
+    nilai: '',
+    residu: 0,
+    umur: 0
 })
 const stateReset = () => {
     state.nama = ''
     state.id = ''
     state.no = ''
-    state.keterangan = ''
-    state.satuan = satuanOptions[0]
-    state.harga = 0
-    state.kuantitas = 0
+    state.nilai = ''
+    state.residu = 0
+    state.umur = 0
 }
 
 
 const isSubmit = ref(false)
-async function onDelete(event: FormSubmitEvent<any>) {
-    isSubmit.value = true
-    const submitData = event.data
-
-    $fetch('/api/habis-pakai', {
-        method: 'delete',
-        body: submitData
-    })
-        .then(async e => {
-            console.log(e)
-            toastSuccess('success menghapus data')
-            refresh()
-            isDelete.value = false
-        })
-        .catch(e => {
-            console.log(e)
-            const error = e?.response?.data?.message ?? 'An unknown error occurred.'
-            toastError(error)
-        }).finally(() => {
-            isSubmit.value = false
-            stateReset()
-        })
-}
 
 
 async function onSubmit(event: FormSubmitEvent<any>) {
@@ -224,7 +161,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     const submitData = event.data
     const method = submitData.id ? 'put' : 'post'
 
-    $fetch('/api/habis-pakai', {
+    $fetch('/api/penyusutan', {
         method: method,
         body: submitData
     })
@@ -267,14 +204,17 @@ const columns = [
     {
         key: 'nilai',
         label: 'Nilai',
+        sortable: true
     },
     {
         key: 'residu',
         label: 'NIlai Residu',
+        sortable: true
     },
     {
         key: 'umur',
         label: 'Umur ekonomis',
+        sortable: true
     },
     {
         key: 'penyusutan_tahun',

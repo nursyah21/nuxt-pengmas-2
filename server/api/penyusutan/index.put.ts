@@ -1,15 +1,15 @@
 import { useValidatedBody, z } from "h3-zod";
-import { schemaKapasitasProduksi } from "~/schema/schemaKapasitasProduksi";
+import { schemaPeralatan } from "~/schema/schemaPeralatan";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
-  const { kapasitas_produksi, id } = await readBody(
+  const { residu, umur, id } = await readBody(
     event
   );
 
-  await schemaKapasitasProduksi.findByIdAndUpdate(id, {
-    kapasitas_produksi
+  await schemaPeralatan.findByIdAndUpdate(id, {
+    residu, penyusutan: umur
   });
 
   return { message: "success edit kapasitas produksi" };
