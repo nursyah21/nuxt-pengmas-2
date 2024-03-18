@@ -4,9 +4,8 @@ import { schemaOperasional } from "~/schema/schemaOperasional";
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
-  const data = await readBody(event)
-  // console.log(data)
-  await schemaOperasional.create(data);
+  const {id} = await readBody(event)
+  await schemaOperasional.findByIdAndDelete(id)
 
-  return { message: "success menambahkan habis pakai" };
+  return { message: "success menghapus" };
 });

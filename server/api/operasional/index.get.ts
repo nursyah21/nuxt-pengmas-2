@@ -7,34 +7,48 @@ export default defineEventHandler(async (event) => {
   const data = await schemaOperasional.find({});
 
   // @ts-ignore
-  // let newData = [];
-  // let penyusutan_tahun = 0
-  // let penyusutan_bulan = 0
-  // let penyusutan_hari = 0
-  // let penyusutan_unit = 0
-  // data.forEach((e, idx) => {
-  //   let nilai = Number(e.harga) * Number(e.kuantitas);
-  //   let tahun = (nilai - e.residu) / e.penyusutan;
-  //   if (isNaN(tahun)) tahun = 0
-  //   newData.push({
-  //     no: idx + 1,
-  //     id: e.id,
-  //     nama: e.nama,
-  //     nilai: nilai,
-  //     residu: e.residu,
-  //     umur: e.penyusutan,
-  //     penyusutan_tahun: tahun,
-  //     penyusutan_bulan: tahun / 12,
-  //     penyusutan_hari: tahun / 365,
-  //     penyusutan_hari_unit: tahun / 365 / e.kuantitas,
-  //   });
-  //   penyusutan_tahun += tahun
-  //   penyusutan_bulan += tahun / 12
-  //   penyusutan_hari += tahun / 365
-  //   penyusutan_unit += tahun / 365 / e.kuantitas
-  // });
+  let total_jalan = 0;
+  let total_lain = 0;
 
-  return { data };
+  data.forEach((item) => {
+    if (item.kuantitas_perjalanan && item.harga_perjalanan) {
+      total_jalan += item.kuantitas_perjalanan * item.harga_perjalanan;
+    }
+    if (item.kuantitas_lain_lain && item.harga_lain_lain) {
+      total_lain += item.kuantitas_lain_lain * item.harga_lain_lain;
+    }
+  });
+
+  
+
+  const lain_lain = data.filter((e) => e.nama_lain_lain);
+  const _lain_lain = lain_lain.map((item, idx)=>({
+    no: idx+1,
+    id: item.id,
+    nama_lain_lain: item.nama_lain_lain,
+    keterangan_lain_lain: item.keterangan_lain_lain,
+    kuantitas_lain_lain: item.kuantitas_lain_lain,
+    satuan_lain_lain: item.satuan_lain_lain,
+    harga_lain_lain: item.harga_lain_lain
+  }))
+
+  const perjalanan = data.filter((e) => e.nama_perjalanan);
+  const _perjalanan = perjalanan.map((item, idx)=>({
+    no: idx+1,
+    id: item.id,
+    nama_perjalanan: item.nama_perjalanan,
+    keterangan_perjalanan: item.keterangan_perjalanan,
+    kuantitas_perjalanan: item.kuantitas_perjalanan,
+    satuan_perjalanan: item.satuan_perjalanan,
+    harga_perjalanan: item.harga_perjalanan
+  }))
+
+  return {
+    perjalanan: _perjalanan,
+    lain_lain: _lain_lain,
+    total_lain,
+    total_jalan,
+  };
   // @ts-ignore
   // return { data: newData, penyusutan_tahun, penyusutan_bulan, penyusutan_hari, penyusutan_unit };
 });

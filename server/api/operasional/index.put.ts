@@ -1,16 +1,15 @@
 import { useValidatedBody, z } from "h3-zod";
-import { schemaPeralatan } from "~/schema/schemaPeralatan";
+import { schemaOperasional } from "~/schema/schemaOperasional";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
-  const { residu, umur, id } = await readBody(
+  const data = await readBody(
     event
   );
+    console.log(data);
 
-  await schemaPeralatan.findByIdAndUpdate(id, {
-    residu, penyusutan: umur
-  });
+  await schemaOperasional.findByIdAndUpdate(data.id, data);
 
   return { message: "success edit kapasitas produksi" };
 });
