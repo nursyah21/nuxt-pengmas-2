@@ -58,6 +58,12 @@ const items = [
         click: () => {
             navigateTo('/dashboard/penyusutan')
         }
+    },
+    {
+        label: 'Operasional',
+        click: () => {
+            navigateTo('/dashboard/operasional')
+        }
     }
     ],
 ]

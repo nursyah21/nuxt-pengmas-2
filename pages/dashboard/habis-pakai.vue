@@ -124,7 +124,8 @@
                 </UFormGroup>
 
                 <UFormGroup label="Satuan" name="satuan">
-                    <USelectMenu v-model="state.satuan" :options="satuanOptions" />
+                    <!-- <USelectMenu v-model="state.satuan" :options="satuanOptions" /> -->
+                    <UInput v-model="state.satuan" />
                 </UFormGroup>
 
                 <UFormGroup label="harga" name="harga">
@@ -215,7 +216,7 @@ const state = reactive({
     nama: '',
     keterangan: '',
     kuantitas: 0,
-    satuan: satuanOptions[0],
+    satuan: '',
     harga: 0,
 })
 const stateReset = () => {
@@ -223,7 +224,7 @@ const stateReset = () => {
     state.id = ''
     state.no = ''
     state.keterangan = ''
-    state.satuan = satuanOptions[0]
+    state.satuan = ''
     state.harga = 0
     state.kuantitas = 0
 }
