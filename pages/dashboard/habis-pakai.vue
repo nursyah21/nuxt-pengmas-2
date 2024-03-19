@@ -49,7 +49,7 @@
     <UModal v-model="isOpenKapasitas" :prevent-close="isSubmit">
         <ClientOnly>
             <UForm  :state="stateKapasitas" class="space-y-4 m-4" @submit="onSubmitKapasitas">
-                <UFormGroup label="Kuantitas" name="kuantitas">
+                <UFormGroup label="Kapasitas" name="kuantitas">
                     <UInput v-model="stateKapasitas.kapasitas_produksi" type="number"/>
                 </UFormGroup>
 

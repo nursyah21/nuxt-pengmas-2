@@ -160,6 +160,7 @@ const itemsLain = (row) => [
         label: 'Edit',
         icon: 'i-heroicons-pencil-square-20-solid',
         click: () => {
+            mode.value = ''
             state.nama = row.nama_lain_lain
             state.id = row.id
             state.keterangan = row.keterangan_lain_lain
@@ -173,6 +174,7 @@ const itemsLain = (row) => [
         label: 'Delete',
         icon: 'i-heroicons-trash-20-solid',
         click: () => {
+            mode.value = ''
             state.nama = row.nama_lain_lain
             state.id = row.id
             state.keterangan = row.keterangan_lain_lain
