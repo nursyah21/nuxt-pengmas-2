@@ -52,7 +52,7 @@ const optionsKas = ref({
 })
 const optionsKeuntungan = ref({
     chart: {
-        id: 'vuechart-example',
+        id: 'vuechart-example2',
         theme: {
             mode: 'light'
         },
