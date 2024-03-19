@@ -64,6 +64,12 @@ const items = [
         click: () => {
             navigateTo('/dashboard/operasional')
         }
+    },
+    {
+        label: 'Investasi',
+        click: () => {
+            navigateTo('/dashboard/investasi')
+        }
     }
     ],
 ]
